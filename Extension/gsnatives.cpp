@@ -190,17 +190,10 @@ static cell_t sm_ClearRules(IPluginContext *pContext, const cell_t *params)
 	return 1;
 }
 
-static cell_t sm_ForceHeartbeat(IPluginContext *pContext, const cell_t *params)
-{
-	ISteamGameServer *pServer = GetGSPointer();
-
-	if (pServer == NULL)
-	{
-		return 0;
-	}
-
-	pServer->ForceHeartbeat();
-	return 1;
+static cell_t sm_ForceHeartbeat(IPluginContext *pContext, const cell_t *params)  
+{  
+	// ForceHeartbeat() was removed from ISteamGameServer in newer Steamworks SDK versions  
+	return 0;  
 }
 
 static cell_t sm_UserHasLicenseForApp(IPluginContext *pContext, const cell_t *params)

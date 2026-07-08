@@ -176,20 +176,30 @@ ISteamGameServerStats *SteamWorksGameServer::GetServerStats(void)
 	return this->m_pStats;
 }
 
-ISteamHTTP *SteamWorksGameServer::GetHTTP(void)
-{
-	if (this->m_pHTTP == NULL && this->GetSteamClient() != NULL)
-	{
-		HSteamUser hSteamUser;
-		HSteamPipe hSteamPipe;
-		GetUserAndPipe(hSteamUser, hSteamPipe);
-		
-		const char *pVersion = STEAMHTTP_INTERFACE_VERSION;
-		GetGameSpecificConfigInterface("SteamHTTPInterfaceVersion", pVersion);
-		this->m_pHTTP = this->GetSteamClient()->GetISteamHTTP(hSteamUser, hSteamPipe, pVersion);
-	}
-	
-	return this->m_pHTTP;
+ISteamHTTP *SteamWorksGameServer::GetHTTP(void)  
+{  
+    if (this->m_pHTTP == NULL && this->GetSteamClient() != NULL)  
+    {  
+        HSteamUser hSteamUser;  
+        HSteamPipe hSteamPipe;  
+        GetUserAndPipe(hSteamUser, hSteamPipe);  
+  
+        // Fallback: if no game server pipe, use the client-side pipe instead.  
+        if (hSteamPipe == 0)  
+        {  
+            hSteamUser = SteamAPI_GetHSteamUser();  
+            hSteamPipe = SteamAPI_GetHSteamPipe();  
+        }  
+  
+        if (hSteamPipe != 0)  
+        {  
+            const char *pVersion = STEAMHTTP_INTERFACE_VERSION;  
+            GetGameSpecificConfigInterface("SteamHTTPInterfaceVersion", pVersion);  
+            this->m_pHTTP = this->GetSteamClient()->GetISteamHTTP(hSteamUser, hSteamPipe, pVersion);  
+        }  
+    }  
+  
+    return this->m_pHTTP;  
 }
 
 ISteamMatchmaking *SteamWorksGameServer::GetMatchmaking(void)
